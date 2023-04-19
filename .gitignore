@@ -5,3 +5,4 @@ voting
 *.csv
 .env
 output/
+db/
