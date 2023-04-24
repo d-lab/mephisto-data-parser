@@ -27,6 +27,9 @@ if __name__ == "__main__":
     total_task = len(user_dataframe["task_id"].unique())
 
     total_user = user_dataframe.count()[0]
+    if total_user == 0:
+        print("No user found in the database")
+        exit()
 
     user_have_outputs = user_dataframe["user_status"].value_counts()[True]
 
