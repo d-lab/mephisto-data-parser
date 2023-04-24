@@ -21,7 +21,12 @@ def GetStatusOfAgentId(cursor: Cursor, agent_id):
         f"SELECT status FROM agents WHERE agent_id={agent_id}"
     )
 
-    return database_result.fetchone()[0]
+    result = database_result.fetchone()
+    # Check if agent_id exists in database
+    if result == None:
+        return None
+
+    return result[0]
 
 
 def CompareFolderWithDatabase(user_dataframe: DataFrame):

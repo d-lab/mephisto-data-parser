@@ -31,7 +31,8 @@ def CreateUserDirList(assignment_dir):
         current_dir = pathlib.PurePath(subdir)
         if current_dir == assignment_dir:
             for dir in dirs:
-                user_dir_list.append(current_dir.joinpath(dir))
+                if dir.isdigit():
+                    user_dir_list.append(current_dir.joinpath(dir))
         else:
             continue
 
@@ -39,9 +40,11 @@ def CreateUserDirList(assignment_dir):
 
 
 def GetOutputsResults(json_dir):
-    file_dir = pathlib.PurePath(json_dir).joinpath("agent_data.json")
-
-    json_file = open(file_dir)
+    try:
+        file_dir = pathlib.PurePath(json_dir).joinpath("agent_data.json")
+        json_file = open(file_dir)
+    except:
+        return False
     data: dict = json.load(json_file)
     if data.get("outputs") != None:
         return True
@@ -83,6 +86,7 @@ def CreateUserDataFrame(folder_link, database_path):
         "user_dir": [],
         "agent_data_dir": [],
         "agent_meta_dir": [],
+        "assign_data_dir": [],
         "user_status": [],
         "data_base_status": [],
     }
@@ -98,6 +102,9 @@ def CreateUserDataFrame(folder_link, database_path):
             )
             user_data["agent_meta_dir"].append(
                 pathlib.PurePath(user_dir).joinpath("agent_meta.json")
+            )
+            user_data["assign_data_dir"].append(
+                pathlib.PurePath(user_dir).joinpath("assign_data.json")
             )
             user_data["user_status"].append(GetOutputsResults(user_dir))
             user_data["data_base_status"].append(

@@ -10,6 +10,7 @@ def CreateCSVDataFrame(user_dataframe: DataFrame):
         "agent_id": [],
         "agent_data_dir": [],
         "agent_meta_dir": [],
+        "assign_data_dir": [],
     }
 
     for i in range(user_dataframe.shape[0]):
@@ -17,6 +18,7 @@ def CreateCSVDataFrame(user_dataframe: DataFrame):
         agent_data["agent_id"].append(int(user_dataframe["user_id"][i]))
         agent_data["agent_data_dir"].append(user_dataframe["agent_data_dir"][i])
         agent_data["agent_meta_dir"].append(user_dataframe["agent_meta_dir"][i])
+        agent_data["assign_data_dir"].append(user_dataframe["assign_data_dir"][i])
 
     agent_data_dataframe = pd.DataFrame(data=agent_data)
     agent_data_dataframe.sort_values(
@@ -32,7 +34,11 @@ def GetAgentsInput(csv_dataframe: DataFrame):
     output_df = pd.DataFrame.assign(csv_dataframe)
 
     for file in agent_data_list:
-        json_file = open(file)
+        try:
+            json_file = open(file)
+        except:
+            agent_inputs_list.append(None)
+            continue
         data: dict = json.load(json_file)
         # Currently leave as string
         agent_inputs_list.append(str(data.get("inputs")))
@@ -48,7 +54,10 @@ def GetAgentsOutput(csv_dataframe: DataFrame):
     outputs = []
     indices = []
     for index, file in agent_data_list.items():
-        json_file = open(file)
+        try:
+            json_file = open(file)
+        except:
+            continue
         data: dict = json.load(json_file)
         outputs_dict: dict = data.get("outputs")
         if outputs_dict == None:
@@ -75,7 +84,10 @@ def GetAgentMetaData(csv_dataframe: DataFrame):
     outputs = []
 
     for file in agent_meta_list:
-        json_file = open(file)
+        try:
+            json_file = open(file)
+        except:
+            continue
         data: dict = json.load(json_file)
         for k, v in data.items():
             if isinstance(v, list):
@@ -84,6 +96,27 @@ def GetAgentMetaData(csv_dataframe: DataFrame):
         outputs.append(data)
 
     outputs_df = pd.DataFrame.from_records(outputs)
+
+    return csv_dataframe.join(outputs_df)
+
+
+def GetAssignData(csv_dataframe: DataFrame):
+    assign_data_list = list(csv_dataframe["assign_data_dir"])
+    outputs = []
+
+    for file in assign_data_list:
+        try:
+            json_file = open(file)
+        except:
+            continue
+        data: dict = json.load(json_file)
+        for k, v in data.items():
+            if isinstance(v, list):
+                data[k] = str(v)
+
+        outputs.append(data)
+
+        outputs_df = pd.DataFrame.from_records(outputs)
 
     return csv_dataframe.join(outputs_df)
 

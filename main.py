@@ -46,6 +46,10 @@ if __name__ == "__main__":
 
     agent_meta_dataframe = GetAgentMetaData(csv_dataframe)
 
+    # Create dataframe for assign data
+
+    assign_data_df = GetAssignData(csv_dataframe)
+
     PrintTaskInformation(user_dataframe)
 
     print(f"Total task: {total_task}")
@@ -64,6 +68,9 @@ if __name__ == "__main__":
     CompareFolderWithDatabase(user_dataframe)
 
     CreateCSVFile(agent_data_dataframe, csv_folder, "agent_data")
+
     CreateCSVFile(agent_meta_dataframe, csv_folder, "agent_meta")
+
+    CreateCSVFile(assign_data_df, csv_folder, "assign_data")
 
     print("CSV File Created !!!!")
